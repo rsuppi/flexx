@@ -92,6 +92,7 @@ class BaseRuntime:
         atexit.register(self.close)
         
         self._exe = None
+        self._version = None
         self._proc = None
         self._streamreader = None
         
@@ -342,8 +343,10 @@ class DesktopRuntime(BaseRuntime):
         # task manager. Using sys.executable also works well when frozen.
         exe_name, ext = op.splitext(op.basename(sys.executable))
         # todo: What kind of exe name? test with freezing on different OS's
-        # exe_name = exe_name + '-ui' + ext
-        exe_name = exe_name + ext
+        exe_name = exe_name + '-uix' + ext
+        # exe_name = exe_name + ext
+        
+        assert runtime_exe.startswith(RUNTIME_DIR)
         
         if sys.platform.startswith('darwin'):
             # OSX: create an app, the name of the exe does not matter

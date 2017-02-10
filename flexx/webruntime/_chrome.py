@@ -16,7 +16,7 @@ import subprocess
 
 from .. import config
 from ._common import DesktopRuntime, find_osx_exe
-from ._manage import RUNTIME_DIR
+from ._manage import RUNTIME_DIR, create_temp_app_dir
 
 
 class ChromeRuntime(DesktopRuntime):
@@ -48,27 +48,57 @@ class ChromeRuntime(DesktopRuntime):
         for part in parts:
             if part and part[0].isnumeric():
                 return part
-    
+   
     def _install_runtime(self):
-        version = 'latest'
+        """ Synmlink on Unix. Stub in Windows: in contrast to XUL, its
+        not needed to avoid grouping. Plus the firewall would asks
+        permission for each new exe that we use this way
+        """
+        exe = self.get_exe()
+        version = self._get_version(exe)
+        if not exe:
+            raise RuntimeError('You need to install Chrome / Chromium')
+            # todo: dialite
+        
         path = op.join(RUNTIME_DIR, self.get_name() + '_' + version)
-        if not op.isdir(path):
+        if sys.platform.startswith('win'):
             os.mkdir(path)
-        with open(op.join(path, 'stub.txt'), 'wb') as f:
-            f.write('Flexx uses the system Chrome'.encode())
+            with open(op.join(path, 'stub.txt'), 'wb') as f:
+                f.write('Flexx uses the system Chrome'.encode())
+        else:
+            os.mkdir(path)
+            os.symlink(exe, op.join(path, 'chrome'))
     
     def _launch_tab(self, url):
         self._spawn_subprocess([self.get_exe(), url])
     
     def _launch_app(self, url):
+        
+        # Get dir to store app definition
+        app_path = create_temp_app_dir('firefox')
+        # id = op.basename(app_path).split('_', 1)[1].replace('~', '_')
+        
         # Get chrome executable
-        self.get_runtime('latest')
-        exe = self.get_exe()
-        if exe is None:
+        self.get_runtime(self.get_version())
+        
+        chrome_exe = self.get_exe()
+        if chrome_exe is None:
             raise RuntimeError('Chrome or Chromium browser was not detected.')
             # todo: dialite
+        elif not op.isfile(chrome_exe):
+            # We have no way to wrap things up in a custom app
+            exe = chrome_exe
+        else:
+            # We make sure the runtime is "installed" and mangle the name
+            version = self._get_version(chrome_exe)
+            chrome_local_exe = op.join(self.get_runtime(version), 'chrome')
+            chrome_local_exe += '.exe' * sys.platform.startswith('win')
+            if os.path.isfile(chrome_local_exe):
+                exe = self._get_app_exe(chrome_local_exe, app_path)
+            else:
+                exe = chrome_exe
         
-        # No way to set icon and title. On Windows, Chrome uses document
+        # No way to set icon and title. On Wi,ndows, Chrome uses document
         # title/icon. On OS X we create an app. On Linux ... tough luck
         # self._title ...
         # self._icon ...
