@@ -205,8 +205,12 @@ class NWRuntime(DesktopRuntime):
         # It may include "." or "_" or "-" characters. Normally, NW.js stores
         # the app's profile data under the directory named name, but we
         # overload user-data-dir.
+        
+        # From 0.20.0, even with --user-data-dir, some data is still written
+        # in a dir with "name", at least on Windows. but we can use a fixed name
+        # todo: check this on other platforms!
         D = get_manifest_template()
-        D['name'] = self._app_name + '_' + id
+        D['name'] = 'flexx_stub_nw_profile' #+ self._app_name + '_' + id
         D['description'] += ' (%s)' % id
         D['main'] = url
         D['window']['title'] = self._title
@@ -239,5 +243,5 @@ class NWRuntime(DesktopRuntime):
             os.mkdir(profile_dir)
         
         # Launch
-        cmd = [exe, app_path, '--user-data-dir=' + profile_dir]
+        cmd = [exe, '--user-data-dir=' + profile_dir, app_path]
         self._start_subprocess(cmd, LD_LIBRARY_PATH=llp)

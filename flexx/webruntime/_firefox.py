@@ -314,8 +314,9 @@ class FirefoxRuntime(DesktopRuntime):
                  windowfeatures=windowfeatures)
         
         # Create values that need to be unique
+        # todo: it looks like name does not have to be unique on Windows.
+        D['name'] = 'flexx_xul_stub_profile' #+ self._app_name + '_' + id
         D['windowid'] = 'W' + id
-        D['name'] = self._app_name + '_' + id
         D['id'] = 'app_' + id + '@flexx.io'
         
         # Fill in arguments in file contents
