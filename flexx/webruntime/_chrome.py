@@ -66,6 +66,7 @@ class ChromeRuntime(DesktopRuntime):
             with open(op.join(path, 'stub.txt'), 'wb') as f:
                 f.write('Flexx uses the system Chrome'.encode())
         else:
+            # This makes a nice icon on OS X, but it still groups with Chrome!
             os.mkdir(path)
             os.symlink(exe, op.join(path, 'chrome'))
     
@@ -75,7 +76,7 @@ class ChromeRuntime(DesktopRuntime):
     def _launch_app(self, url):
         
         # Get dir to store app definition
-        app_path = create_temp_app_dir('firefox')
+        app_path = create_temp_app_dir('chrome')
         # id = op.basename(app_path).split('_', 1)[1].replace('~', '_')
         
         # Get chrome executable

@@ -410,8 +410,10 @@ class DesktopRuntime(BaseRuntime):
                     os.link(op.join(src_dir, relpath, fname),
                             op.join(dst_dir, relpath, fname))
         # Make runtime exe
-        os.link(op.realpath(op.join(src_dir, 'Contents', 'MacOS', exe_name_src)),
-                op.join(dst_dir, 'Contents', 'MacOS', exe_name_dst))
+        # os.link(
+        shutil.copy2(
+            op.realpath(op.join(src_dir, 'Contents', 'MacOS', exe_name_src)),
+            op.join(dst_dir, 'Contents', 'MacOS', exe_name_dst))
         # Make info.plist
         info = INFO_PLIST.format(name=title, exe=exe_name_dst)
         with open(op.join(dst_dir, 'Contents', 'info.plist'), 'wb') as f:
