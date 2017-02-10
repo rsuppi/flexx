@@ -21,7 +21,14 @@ from ._manage import RUNTIME_DIR, create_temp_app_dir
 
 class ChromeRuntime(DesktopRuntime):
     """ Runtime representing either the Google Chrome or Chromium browser.
+    This runtime does support desktop-like apps, which works pretty well on
+    Windows, but not so much on OS X and Linux:
+
+    * On Linux it has the Chrome/Chromium icon.
+    * On OSX and Linux it groups with the Chrome/Chromium browser.
+    * Fullscreen mode does not work on OS X.
     """
+    
     # Note, this is not an abstract class, but a proxy class for either browser
     
     def _get_name(self):
@@ -214,11 +221,7 @@ class ChromeRuntime(DesktopRuntime):
 
 
 class GoogleChromeRuntime(ChromeRuntime):
-    """ Runtime based on the Google Chrome browser. This runtime does support
-    desktop-like apps, but it is somewhat limited in that it has a
-    Chrome icon on Linux, the app tends to group on the taskbar with
-    the Chrome/Chromium browser, and it cannot be closed with the
-    ``close()`` method.
+    """ Runtime based on the Google Chrome browser. Derives from ChromeRuntime.
     """
     
     def _get_name(self):
@@ -229,11 +232,7 @@ class GoogleChromeRuntime(ChromeRuntime):
 
 
 class ChromiumRuntime(ChromeRuntime):
-    """ Runtime based on the Chromium browser. This runtime does support
-    desktop-like apps, but it is somewhat limited in that it has a
-    Chrome icon on Linux, the app tends to group on the taskbar with
-    the Chrome/Chromium browser, and it cannot be closed with the
-    ``close()`` method.
+    """ Runtime based on the Chromium browser. Derives from ChromeRuntime.
     """
     
     def _get_name(self):
